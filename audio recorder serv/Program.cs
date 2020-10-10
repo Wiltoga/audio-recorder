@@ -38,7 +38,17 @@ namespace audioRecorderServ
                         command = split[0];
                         arguments = split.Where((_, i) => i > 0).ToArray();
                     }
-                    //TODO
+                    switch (command)
+                    {
+                        case "-s":
+                        case "stop":
+                            Environment.Exit(0);
+                            break;
+
+                        default:
+                            r.Respond("Unknown command '" + command + "'");
+                            break;
+                    }
                 };
                 await Server.Start();
             }

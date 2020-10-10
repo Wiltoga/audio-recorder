@@ -31,18 +31,29 @@ namespace audioRecorderCmd
                 mutex.Close();
                 Process.Start(new ProcessStartInfo("audiorecserv.exe"));
             }
-            Client = new Client("audioRecorder");
-            Client.Start();
-            string req = "";
-            for (int i = 0; i < args.Length; ++i)
+            if (args.Length == 0)
             {
-                if (i > 0)
-                    req += ' ';
-                req += '"' + args[i] + '"';
+                Console.WriteLine(
+@"Usage : audiorec [command]
+
+commands:
+stop, -s        : stop the recording server");
             }
-            var response = Client.SendRequest(req);
-            if (response != null)
-                Console.WriteLine(response.StringData);
+            else
+            {
+                Client = new Client("audioRecorder");
+                Client.Start();
+                string req = "";
+                for (int i = 0; i < args.Length; ++i)
+                {
+                    if (i > 0)
+                        req += ' ';
+                    req += '"' + args[i] + '"';
+                }
+                var response = Client.SendRequest(req);
+                if (response != null)
+                    Console.WriteLine(response.StringData);
+            }
         }
 
         #endregion Private Methods
