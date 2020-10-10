@@ -34,7 +34,7 @@ namespace audioRecorderServ
                     string command;
                     string[] arguments;
                     {
-                        var split = splitCommand(r.StringData);
+                        var split = SplitCommand(r.StringData);
                         command = split[0];
                         arguments = split.Where((_, i) => i > 0).ToArray();
                     }
@@ -54,7 +54,7 @@ namespace audioRecorderServ
             }
         }
 
-        private static string[] splitCommand(string cmd)
+        private static string[] SplitCommand(string cmd)
         {
             var list = new List<string>();
             int skipBlank(ref int index, string str)
