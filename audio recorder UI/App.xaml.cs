@@ -47,7 +47,7 @@ namespace audio_recorder_UI
                 {
                     mutex.ReleaseMutex();
                     mutex.Close();
-                    Process.Start(new ProcessStartInfo("audiorec.exe"));
+                    Process.Start(new ProcessStartInfo("audiorecserv.exe"));
                 }
                 Client = new Client("audioRecorder");
                 Client.Start();

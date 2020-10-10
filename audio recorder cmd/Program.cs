@@ -1,5 +1,6 @@
 ﻿using Interprocomm;
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace audioRecorderCmd
@@ -15,27 +16,33 @@ namespace audioRecorderCmd
         #region Public Properties
 
         public static Client Client { get; private set; }
-        public static Server Server { get; private set; }
 
         #endregion Public Properties
 
         #region Private Methods
 
-        private static async System.Threading.Tasks.Task Main(string[] args)
+        private static void Main(string[] args)
         {
             bool created;
             mutex = new Mutex(true, "audioRecorder", out created);
             if (created)
             {
-                Server = new Server("audioRecorder", 2);
-
-                await Server.Start();
+                mutex.ReleaseMutex();
+                mutex.Close();
+                Process.Start(new ProcessStartInfo("audiorecserv.exe"));
             }
-            else
+            Client = new Client("audioRecorder");
+            Client.Start();
+            string req = "";
+            for (int i = 0; i < args.Length; ++i)
             {
-                Client = new Client("audioRecorder");
-                Client.Start();
+                if (i > 0)
+                    req += ' ';
+                req += args[i];
             }
+            var response = Client.SendRequest(req);
+            if (response != null)
+                Console.WriteLine(response.StringData);
         }
 
         #endregion Private Methods
