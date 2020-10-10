@@ -38,7 +38,7 @@ namespace audioRecorderCmd
             {
                 if (i > 0)
                     req += ' ';
-                req += args[i];
+                req += '"' + args[i] + '"';
             }
             var response = Client.SendRequest(req);
             if (response != null)
