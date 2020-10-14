@@ -37,7 +37,17 @@ namespace audioRecorderCmd
 @"Usage : audiorec [command]
 
 commands:
-stop, -s        : stop the recording server");
+stop, -s                    : stop the recording server
+view, -v <element> [mode]   : see an element
+                        elements :
+                            - devices, modes :
+                                - all : see all devices
+                                - input : only inputs
+                                - output : only outputs
+                            - mxsize : max size of the samples buffer
+record, -r <devices name>   : start recording the given devices
+mxsize, -xs <size in bytes> : max size of the sample to record
+out, -o <path>              : saves the file to the specified output.");
             }
             else
             {

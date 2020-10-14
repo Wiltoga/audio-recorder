@@ -1,6 +1,9 @@
 ﻿using Interprocomm;
+using NAudio.CoreAudioApi;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -29,25 +32,99 @@ namespace audioRecorderServ
             if (created)
             {
                 Server = new Server("audioRecorder", 2);
+                long maxBuff = 32000000;
                 Server.RequestRecieved += r =>
                 {
-                    string command;
-                    string[] arguments;
+                    try
                     {
-                        var split = SplitCommand(r.StringData);
-                        command = split[0];
-                        arguments = split.Where((_, i) => i > 0).ToArray();
-                    }
-                    switch (command)
-                    {
-                        case "-s":
-                        case "stop":
-                            Environment.Exit(0);
-                            break;
+                        string command;
+                        string[] arguments;
+                        {
+                            var split = SplitCommand(r.StringData);
+                            command = split[0];
+                            arguments = split.Where((_, i) => i > 0).ToArray();
+                        }
+                        switch (command)
+                        {
+                            case "-s":
+                            case "stop":
+                                Environment.Exit(0);
+                                break;
 
-                        default:
-                            r.Respond("Unknown command '" + command + "'");
-                            break;
+                            case "view":
+                            case "-v":
+                                switch (arguments.Length > 0 ? arguments[0] : "")
+                                {
+                                    case "devices":
+                                        switch (arguments.Length > 1 ? arguments[1] : "")
+                                        {
+                                            case "all":
+                                                var result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.DeviceFriendlyName + " : " + (item.DataFlow == DataFlow.Capture ? "input" : "output");
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            case "input":
+                                                result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.DeviceFriendlyName;
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            case "output":
+                                                result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.DeviceFriendlyName;
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            default:
+                                                r.Respond("Invalid command");
+                                                break;
+                                        }
+                                        break;
+
+                                    case "mxsize":
+                                        r.Respond(maxBuff.ToString());
+                                        break;
+
+                                    default:
+                                        r.Respond("Invalid command");
+                                        break;
+                                }
+                                break;
+
+                            case "record":
+                            case "-r":
+                                break;
+
+                            case "mxsize":
+                            case "-xs":
+                                if (arguments.Length > 0)
+                                    maxBuff = long.Parse(arguments[0]);
+                                break;
+
+                            default:
+                                r.Respond("Unknown command '" + command + "'");
+                                break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        r.Respond(e.ToString());
                     }
                 };
                 await Server.Start();
@@ -57,7 +134,7 @@ namespace audioRecorderServ
         private static string[] SplitCommand(string cmd)
         {
             var list = new List<string>();
-            int skipBlank(ref int index, string str)
+            static int skipBlank(ref int index, string str)
             {
                 int skipped = 0;
                 while (str.Length > index && char.IsWhiteSpace(str[index]))
