@@ -167,6 +167,7 @@ namespace audioRecorderServ
                             var bytesRemoved = blocks.First.Value.used;
                             position -= bytesRemoved;
                             size -= bytesRemoved;
+                            blocks.First.Value.bytes = null;
                             blocks.RemoveFirst();
                         }
                     }

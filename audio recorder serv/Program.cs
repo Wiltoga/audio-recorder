@@ -19,6 +19,8 @@ namespace audioRecorderServ
 
         #region Public Properties
 
+        public static List<(WasapiCapture, MMDevice, TemporaryStream)> Recorders { get; private set; }
+        public static bool Recording { get; set; }
         public static Server Server { get; private set; }
 
         #endregion Public Properties
@@ -31,8 +33,10 @@ namespace audioRecorderServ
             mutex = new Mutex(true, "audioRecorder", out created);
             if (created)
             {
+                Recording = false;
                 Server = new Server("audioRecorder", 2);
-                long maxBuff = 32000000;
+                int maxBuff = 32000;
+                Recorders = new List<(WasapiCapture, MMDevice, TemporaryStream)>();
                 Server.RequestRecieved += r =>
                 {
                     try
@@ -109,12 +113,89 @@ namespace audioRecorderServ
 
                             case "record":
                             case "-r":
+                                if (!Recording)
+                                {
+                                    var devices = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+                                    foreach (var item in arguments)
+                                    {
+                                        var device = devices.FirstOrDefault(d => d.DeviceFriendlyName == item);
+                                        if (device == null)
+                                        {
+                                            r.Respond("No device named '" + item + "' found.");
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            var stream = new TemporaryStream(maxBuff);
+                                            WasapiCapture recorder;
+                                            if (device.DataFlow == DataFlow.Capture)
+                                                recorder = new WasapiCapture(device);
+                                            else
+                                                recorder = new WasapiLoopbackCapture(device);
+                                            recorder.DataAvailable += (sender, e) => stream.Write(e.Buffer, 0, e.BytesRecorded);
+                                            Recorders.Add((recorder, device, stream));
+                                        }
+                                    }
+                                    foreach (var item in Recorders)
+                                        try
+                                        {
+                                            item.Item1.StartRecording();
+                                        }
+                                        catch (Exception)
+                                        {
+                                            r.Respond("Unable to record the device named '" + item.Item2.DeviceFriendlyName + "'");
+                                            return;
+                                        }
+                                    Recording = true;
+                                }
+                                else
+                                    r.Respond("The server is already recording");
+                                break;
+
+                            case "stoprecord":
+                            case "-sr":
+                                if (Recording)
+                                {
+                                    foreach (var item in Recorders)
+                                    {
+                                        item.Item1.RecordingStopped += (sender, e) =>
+                                        {
+                                            item.Item1.Dispose();
+                                            item.Item3.Dispose();
+                                            item.Item3.Close();
+                                        };
+                                        item.Item1.StopRecording();
+                                    }
+                                    Recorders.Clear();
+                                    Recording = false;
+                                }
+                                break;
+
+                            case "out":
+                            case "-o":
+                                if (Recording)
+                                {
+                                    var files = new List<string>();
+                                    foreach (var item in Recorders)
+                                    {
+                                        var tmpfile = Path.GetTempFileName();
+                                        files.Add(tmpfile);
+                                    }
+                                }
+                                else
+                                    r.Respond("The server is not recording");
+                                break;
+
+                            case "state":
+                                r.Respond(Recording ? "recording" : "stopped");
                                 break;
 
                             case "mxsize":
                             case "-xs":
-                                if (arguments.Length > 0)
-                                    maxBuff = long.Parse(arguments[0]);
+                                if (Recording)
+                                    r.Respond("Unable to change the size when recording");
+                                else if (arguments.Length > 0)
+                                    maxBuff = int.Parse(arguments[0]);
                                 break;
 
                             default:
