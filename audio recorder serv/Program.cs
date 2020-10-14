@@ -1,6 +1,7 @@
 ﻿using Interprocomm;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -68,7 +69,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.DeviceFriendlyName + " : " + (item.DataFlow == DataFlow.Capture ? "input" : "output");
+                                                    result += item.FriendlyName + " : " + (item.DataFlow == DataFlow.Capture ? "input" : "output");
                                                 }
                                                 r.Respond(result);
                                                 break;
@@ -79,7 +80,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.DeviceFriendlyName;
+                                                    result += item.FriendlyName;
                                                 }
                                                 r.Respond(result);
                                                 break;
@@ -90,7 +91,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.DeviceFriendlyName;
+                                                    result += item.FriendlyName;
                                                 }
                                                 r.Respond(result);
                                                 break;
@@ -118,7 +119,7 @@ namespace audioRecorderServ
                                     var devices = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
                                     foreach (var item in arguments)
                                     {
-                                        var device = devices.FirstOrDefault(d => d.DeviceFriendlyName == item);
+                                        var device = devices.FirstOrDefault(d => d.FriendlyName == item);
                                         if (device == null)
                                         {
                                             r.Respond("No device named '" + item + "' found.");
@@ -175,12 +176,49 @@ namespace audioRecorderServ
                             case "-o":
                                 if (Recording)
                                 {
-                                    var files = new List<string>();
+                                    if (arguments.Length == 0)
+                                    {
+                                        r.Respond("Invalid command");
+                                        return;
+                                    }
+                                    else if (!Path.IsPathRooted(arguments[0]))
+                                    {
+                                        r.Respond("Path must be absolute");
+                                        return;
+                                    }
+                                    int n = Recorders.Count;
                                     foreach (var item in Recorders)
                                     {
-                                        var tmpfile = Path.GetTempFileName();
-                                        files.Add(tmpfile);
+                                        item.Item1.RecordingStopped += (sender, e) => n--;
+                                        item.Item1.StopRecording();
                                     }
+                                    while (n > 0)
+                                        Thread.Sleep(50);
+                                    var mixer = new MixingSampleProvider(Recorders.First().Item1.WaveFormat);
+                                    foreach (var rec in Recorders)
+                                    {
+                                        rec.Item3.Seek(0, SeekOrigin.Begin);
+                                        mixer.AddMixerInput(new RawSourceWaveStream(rec.Item3, rec.Item1.WaveFormat));
+                                    }
+                                    WaveFileWriter.CreateWaveFile16(arguments[0], mixer);
+                                    var tmpList = new List<(WasapiCapture, MMDevice, TemporaryStream)>();
+                                    foreach (var item in Recorders)
+                                    {
+                                        item.Item1.Dispose();
+                                        var device = item.Item2;
+                                        var stream = new TemporaryStream(maxBuff);
+                                        WasapiCapture recorder;
+                                        if (device.DataFlow == DataFlow.Capture)
+                                            recorder = new WasapiCapture(device);
+                                        else
+                                            recorder = new WasapiLoopbackCapture(device);
+                                        recorder.DataAvailable += (sender, e) => stream.Write(e.Buffer, 0, e.BytesRecorded);
+                                        tmpList.Add((recorder, device, stream));
+                                    }
+                                    Recorders.Clear();
+                                    Recorders.AddRange(tmpList);
+                                    foreach (var item in Recorders)
+                                        item.Item1.StartRecording();
                                 }
                                 else
                                     r.Respond("The server is not recording");
@@ -208,6 +246,33 @@ namespace audioRecorderServ
                         r.Respond(e.ToString());
                     }
                 };
+                {
+                    var outputFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "NAudio");
+                    Directory.CreateDirectory(outputFolder);
+                    var outputFilePath = Path.Combine(outputFolder, "recorded.wav");
+                    var device = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).First(d => d.FriendlyName.Contains("AUX"));
+                    var capture = new WasapiLoopbackCapture(device);
+                    var writer = new WaveFileWriter(outputFilePath, capture.WaveFormat);
+                    capture.DataAvailable += (s, a) =>
+                    {
+                        writer.Write(a.Buffer, 0, a.BytesRecorded);
+                        if (writer.Position > capture.WaveFormat.AverageBytesPerSecond * 20)
+                        {
+                            capture.StopRecording();
+                        }
+                    };
+                    capture.RecordingStopped += (s, a) =>
+                    {
+                        writer.Dispose();
+                        writer = null;
+                        capture.Dispose();
+                    };
+                    //capture.StartRecording();
+                    while (capture.CaptureState != CaptureState.Stopped)
+                    {
+                        Thread.Sleep(500);
+                    }
+                }
                 await Server.Start();
             }
         }
