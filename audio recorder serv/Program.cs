@@ -144,6 +144,7 @@ namespace audioRecorderServ
                                         }
                                         catch (Exception)
                                         {
+                                            Recorders.Clear();
                                             r.Respond("Unable to record the device named '" + item.Item2.FriendlyName + "'");
                                             return;
                                         }
@@ -179,11 +180,6 @@ namespace audioRecorderServ
                                     if (arguments.Length == 0)
                                     {
                                         r.Respond("Invalid command");
-                                        return;
-                                    }
-                                    else if (!Path.IsPathRooted(arguments[0]))
-                                    {
-                                        r.Respond("Path must be absolute");
                                         return;
                                     }
                                     int n = Recorders.Count;
