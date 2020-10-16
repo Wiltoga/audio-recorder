@@ -5,8 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:audio_recorder_UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="audio-recorder" Height="450" Width="800">
+    <StackPanel>
+        <GroupBox Header="Settings">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Device to record :" />
+                    <ComboBox Name="cb_device" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Path to save :" />
+                    <TextBox Name="tb_path" Width="200" />
+                    <Button Content="Browse" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Duration of the record :" />
+                    <TextBox Name="tb_time" ToolTip="in seconds" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Record">
+            <StackPanel Orientation="Horizontal">
+                <Image Name="img_status" Source="https://www.ex-t.com/wp-content/uploads/2019/04/blank-80.png" Width="16" />
+                <Button Name="btn_record" Content="Start" Style="{StaticResource recordBtnStyle}" />
+                <Button Content="Open folder" />
+                <TextBlock Text="RAM used : " />
+                <TextBlock Name="tbl_ram" Text="30 GB" />
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
 </Window>
