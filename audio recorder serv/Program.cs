@@ -69,7 +69,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.ID + '|' + item.FriendlyName + " : " + (item.DataFlow == DataFlow.Capture ? "input" : "output");
+                                                    result += item.ID + '|' + item.FriendlyName + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
                                                 }
                                                 r.Respond(result);
                                                 break;
@@ -80,7 +80,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.ID + '|' + item.FriendlyName;
+                                                    result += item.ID + '|' + item.FriendlyName + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
                                                 }
                                                 r.Respond(result);
                                                 break;
@@ -91,7 +91,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.ID + '|' + item.FriendlyName;
+                                                    result += item.ID + '|' + item.FriendlyName + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
                                                 }
                                                 r.Respond(result);
                                                 break;
