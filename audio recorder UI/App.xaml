@@ -4,6 +4,77 @@
              xmlns:local="clr-namespace:audio_recorder_UI"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="{x:Type GroupBox}" TargetType="{x:Type GroupBox}">
+            <Setter Property="Margin" Value="5,0" />
+        </Style>
+
+        <Style x:Key="{x:Type StackPanel}" TargetType="{x:Type StackPanel}">
+            <Setter Property="Margin" Value="0,3" />
+        </Style>
+
+        <Style x:Key="{x:Type TextBlock}" TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="5,0" />
+        </Style>
+
+        <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
+            <Setter Property="MinWidth" Value="100" />
+        </Style>
+
+        <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}">
+            <Setter Property="MinWidth" Value="100" />
+        </Style>
+
+        <Style x:Key="{x:Type Image}" TargetType="{x:Type Image}">
+            <Setter Property="Margin" Value="5,0" />
+        </Style>
+
+        <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}">
+            <Setter Property="Margin" Value="5,0" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderBrush" Value="#c0000000" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" Background="#01000000" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#48000000" TargetName="Border" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#80000000" TargetName="Border" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="recordBtnStyle" TargetType="{x:Type Button}">
+            <Setter Property="Foreground" Value="#ffff0040" />
+            <Setter Property="BorderBrush" Value="#ffff0040" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" Background="#01000000" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#a0ff0042" TargetName="Border" />
+                                <Setter Property="BorderBrush" Value="#ffffffff" />
+                                <Setter Property="Foreground" Value="#ffffffff" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#e0ff0042" TargetName="Border" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>
