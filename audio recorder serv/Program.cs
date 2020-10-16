@@ -144,7 +144,7 @@ namespace audioRecorderServ
                                         }
                                         catch (Exception)
                                         {
-                                            r.Respond("Unable to record the device named '" + item.Item2.DeviceFriendlyName + "'");
+                                            r.Respond("Unable to record the device named '" + item.Item2.FriendlyName + "'");
                                             return;
                                         }
                                     Recording = true;
@@ -246,33 +246,6 @@ namespace audioRecorderServ
                         r.Respond(e.ToString());
                     }
                 };
-                {
-                    var outputFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "NAudio");
-                    Directory.CreateDirectory(outputFolder);
-                    var outputFilePath = Path.Combine(outputFolder, "recorded.wav");
-                    var device = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).First(d => d.FriendlyName.Contains("AUX"));
-                    var capture = new WasapiLoopbackCapture(device);
-                    var writer = new WaveFileWriter(outputFilePath, capture.WaveFormat);
-                    capture.DataAvailable += (s, a) =>
-                    {
-                        writer.Write(a.Buffer, 0, a.BytesRecorded);
-                        if (writer.Position > capture.WaveFormat.AverageBytesPerSecond * 20)
-                        {
-                            capture.StopRecording();
-                        }
-                    };
-                    capture.RecordingStopped += (s, a) =>
-                    {
-                        writer.Dispose();
-                        writer = null;
-                        capture.Dispose();
-                    };
-                    //capture.StartRecording();
-                    while (capture.CaptureState != CaptureState.Stopped)
-                    {
-                        Thread.Sleep(500);
-                    }
-                }
                 await Server.Start();
             }
         }
