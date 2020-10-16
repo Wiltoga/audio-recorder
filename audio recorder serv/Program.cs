@@ -194,7 +194,7 @@ namespace audioRecorderServ
                                     }
                                     while (n > 0)
                                         Thread.Sleep(50);
-                                    var mixer = new MixingSampleProvider(Recorders.First().Item1.WaveFormat);
+                                    var mixer = new MixingSampleProvider(new WasapiLoopbackCapture().WaveFormat);
                                     foreach (var rec in Recorders)
                                     {
                                         rec.Item3.Seek(0, SeekOrigin.Begin);
