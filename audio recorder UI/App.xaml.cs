@@ -43,7 +43,7 @@ namespace audio_recorder_UI
                         switch (code)
                         {
                             case 1:
-                                //wake up app
+                                // TODO: wake up app
                                 break;
                         }
                     };
