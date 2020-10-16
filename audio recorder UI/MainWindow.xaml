@@ -5,33 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:audio_recorder_UI"
         mc:Ignorable="d"
-        Title="audio-recorder" Height="450" Width="800">
-    <StackPanel>
+        Title="audio-recorder" Height="300" Width="800">
+    <WrapPanel Orientation="Vertical">
         <GroupBox Header="Settings">
             <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Device to record :" />
-                    <ComboBox Name="cb_device" />
+                <StackPanel>
+                    <TextBlock Text="Device(s) to record :" />
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel>
+                            <TextBlock Text="Outputs" Margin="10,0" />
+                            <ListBox Name="lb_devicesOut" Height="125" Width="250" Margin="5" HorizontalAlignment="Left">
+                                <d:CheckBox Content="Mon Haut Parleur" />
+                                <d:CheckBox Content="Ma Carte son" />
+                            </ListBox>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Inputs" Margin="10,0" />
+                            <ListBox Name="lb_devicesIn" Height="125" Width="250" Margin="5" HorizontalAlignment="Left">
+                                <d:CheckBox Content="Mon Micro" />
+                            </ListBox>
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Path to save :" />
-                    <TextBox Name="tb_path" Width="200" />
-                    <Button Content="Browse" />
+                    <TextBox Name="tb_path" Width="200" d:Text="C:\Users\Moi\Music\Mes Record\" />
+                    <Button Name="btn_browse" Content="Browse" Click="BrowseFolder_Click" />
+                    <Button Name="btn_openFolder" Content="Open folder" Click="OpenFolder_Click" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Duration of the record :" />
-                    <TextBox Name="tb_time" ToolTip="in seconds" />
+                    <TextBlock Text="Duration to record :" />
+                    <TextBox Name="tb_time" d:Text="3600" />
+                    <TextBlock Text="sec" />
                 </StackPanel>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Record">
             <StackPanel Orientation="Horizontal">
-                <Image Name="img_status" Source="https://www.ex-t.com/wp-content/uploads/2019/04/blank-80.png" Width="16" />
-                <Button Name="btn_record" Content="Start" Style="{StaticResource recordBtnStyle}" />
-                <Button Content="Open folder" />
-                <TextBlock Text="RAM used : " />
-                <TextBlock Name="tbl_ram" Text="30 GB" />
+                <Image Name="img_status" d:Source="https://upload.wikimedia.org/wikipedia/commons/8/8b/Red_Circle_full.png" Width="16" />
+                <Button Name="btn_record" Content="Start" Style="{StaticResource recordBtnStyle}" Click="Record_Click" />
+                <TextBlock Text="RAM used : " Margin="5,2,0,2" />
+                <TextBlock Name="tbl_ram" Margin="0,2,2,2" d:Text="30 GB" />
             </StackPanel>
         </GroupBox>
-    </StackPanel>
+    </WrapPanel>
 </Window>

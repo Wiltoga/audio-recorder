@@ -43,8 +43,8 @@ namespace audio_recorder_UI
                         switch (code)
                         {
                             case 1:
-                            //wake up app
-                            break;
+                                //wake up app
+                                break;
                         }
                     };
                     mutex = new Mutex(true, "audioRecorder", out created);
@@ -84,11 +84,12 @@ namespace audio_recorder_UI
 
         #region Public Properties
 
-        public Client Client { get; private set; }
-        public Server UIServer { get; private set; }
+        public static Client Client { get; private set; }
+        public static Server UIServer { get; private set; }
 
         public static readonly string appPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         public static readonly string configPath = Path.Combine(appPath, "config.json");
+        public static readonly string dataPath = Path.Combine(appPath, "data");
 
         public static LogStream logstream = new LogStream(Path.Combine(appPath, "logs.log"));
         public static Settings Config { get; set; }
