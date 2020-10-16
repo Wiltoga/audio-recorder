@@ -69,7 +69,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.FriendlyName + " : " + (item.DataFlow == DataFlow.Capture ? "input" : "output");
+                                                    result += item.ID + '|' + item.FriendlyName + " : " + (item.DataFlow == DataFlow.Capture ? "input" : "output");
                                                 }
                                                 r.Respond(result);
                                                 break;
@@ -80,7 +80,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.FriendlyName;
+                                                    result += item.ID + '|' + item.FriendlyName;
                                                 }
                                                 r.Respond(result);
                                                 break;
@@ -91,7 +91,7 @@ namespace audioRecorderServ
                                                 {
                                                     if (result != "")
                                                         result += "\n";
-                                                    result += item.FriendlyName;
+                                                    result += item.ID + '|' + item.FriendlyName;
                                                 }
                                                 r.Respond(result);
                                                 break;
@@ -119,7 +119,7 @@ namespace audioRecorderServ
                                     var devices = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
                                     foreach (var item in arguments)
                                     {
-                                        var device = devices.FirstOrDefault(d => d.FriendlyName == item);
+                                        var device = devices.FirstOrDefault(d => d.ID == item || d.FriendlyName == item);
                                         if (device == null)
                                         {
                                             r.Respond("No device named '" + item + "' found.");

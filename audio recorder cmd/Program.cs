@@ -40,12 +40,16 @@ commands:
 stop, -s                    : stop the server
 view, -v <element> [mode]   : see an element
                         elements :
-                            - devices, modes :
+                            - devicesid, modes :
+                                - all : see all devices
+                                - input : only inputs
+                                - output : only outputs
+                            - devicesname, modes :
                                 - all : see all devices
                                 - input : only inputs
                                 - output : only outputs
                             - mxsize : max size of the samples buffer in kilobytes
-record, -r <devices name>   : start recording the given devices
+record, -r <devices name>   : start recording the given devices name or id
 stoprecord, -sr             : stop recording
 mxsize, -xs <size in bytes> : max size of the sample to record in kilobytes
 out, -o <path>              : saves the record as .wav file to the specified output. Path must be absolute.
