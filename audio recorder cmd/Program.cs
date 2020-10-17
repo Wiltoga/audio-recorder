@@ -48,11 +48,11 @@ view, -v <element> [mode]   : see an element
                                 - all : see all devices
                                 - input : only inputs
                                 - output : only outputs
-                            - mxsize : max size of the samples buffer in kilobytes
+                            - mxsize : max size of the samples buffer in seconds
                             - record : display the currently recording devices
 record, -r <devices name>   : start recording the given devices name or id
 stoprecord, -sr             : stop recording
-mxsize, -xs <size in bytes> : max size of the sample to record in kilobytes
+mxsize, -xs <size in bytes> : max size of the sample to record in seconds
 out, -o [auto] <path>              : saves the record as .wav file to the specified output. If 'auto' is added,
                                         the path is a folder and the name is auto-generated
 state                       : request the state of the server. Result :

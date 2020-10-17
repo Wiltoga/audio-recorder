@@ -56,7 +56,7 @@ namespace audio_recorder_UI
                     };
                 }
 
-                tb_time.Text = App.Config.TimeToRecord.TotalSeconds.ToString();
+                tb_time.Text = App.Client.SendRequest("-v mxsize").StringData;
                 tb_time.LostFocus += (sender, e) =>
                 {
                     try
@@ -64,16 +64,8 @@ namespace audio_recorder_UI
                         App.Config.TimeToRecord = TimeSpan.FromSeconds(int.Parse(tb_time.Text));
                         JSONSerializer.Serialize(App.ConfigPath, App.Config);
 
-                        int bitrate = 0;
-                        foreach (CheckBox deviceOut in lb_devicesOut.Items)
-                            if (deviceOut.IsChecked.Value)
-                                bitrate = Math.Max(bitrate, int.Parse(deviceOut.Tag as string));
-                        foreach (CheckBox deviceIn in lb_devicesIn.Items)
-                            if (deviceIn.IsChecked.Value)
-                                bitrate = Math.Max(bitrate, int.Parse(deviceIn.Tag as string));
-
                         Request resp;
-                        if ((resp = App.Client.SendRequest("-xs " + bitrate * App.Config.TimeToRecord.TotalSeconds / 1000)) != null)
+                        if ((resp = App.Client.SendRequest("-xs " + App.Config.TimeToRecord.TotalSeconds)) != null)
                             ShowMessageBox(resp.StringData, "An error occurred", MessageBoxImage.Error);
 
                         ReloadRecordingElements();
@@ -247,8 +239,6 @@ namespace audio_recorder_UI
                     if (deviceIn.IsChecked.Value)
                         avgBitrate += int.Parse(deviceIn.Tag as string);
                 }
-                if (App.Config.RecordDevices.Count > 0)
-                    avgBitrate /= App.Config.RecordDevices.Count;
 
                 tbl_ram.Text = (avgBitrate * App.Config.TimeToRecord.TotalSeconds / (1000 * 1000)).ToString("0.##") + " Mo";
             }
