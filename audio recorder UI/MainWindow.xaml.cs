@@ -82,7 +82,6 @@ namespace audio_recorder_UI
                 };
 
                 btn_save.IsEnabled = App.Client.SendRequest("state").StringData == "recording";
-                //TODO populate App.Config.RecordDevices if the server was already recording (utiliser "-v record")
             }
             catch (Exception e)
             {
