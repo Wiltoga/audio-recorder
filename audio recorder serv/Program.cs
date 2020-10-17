@@ -219,7 +219,7 @@ namespace audioRecorderServ
                                         mixer.AddMixerInput(new RawSourceWaveStream(rec.Item3, rec.Item1.WaveFormat));
                                     }
                                     if (arguments[0] == "auto" && arguments.Length > 1)
-                                        WaveFileWriter.CreateWaveFile16(Path.Combine(arguments[1], DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".wav"), mixer);
+                                        WaveFileWriter.CreateWaveFile16("audiorecorder_" + Path.Combine(arguments[1], DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".wav"), mixer);
                                     else
                                         WaveFileWriter.CreateWaveFile16(arguments[0], mixer);
 
