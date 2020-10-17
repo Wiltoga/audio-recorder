@@ -120,7 +120,7 @@ namespace audioRecorderServ
                                             {
                                                 if (i > 0)
                                                     sb.Append('\n');
-                                                sb.Append(Recorders[i].Item2.ID + '|' + Recorders[i].Item2.FriendlyName);
+                                                sb.Append(Recorders[i].Item2.ID + '|' + Recorders[i].Item2.FriendlyName + '|' + Recorders[i].Item1.WaveFormat.AverageBytesPerSecond);
                                             }
                                             r.Respond(sb.ToString());
                                         }
