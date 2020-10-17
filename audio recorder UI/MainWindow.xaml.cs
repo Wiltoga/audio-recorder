@@ -206,6 +206,7 @@ namespace audio_recorder_UI
                     btn_browse.IsEnabled = false;
                     tb_path.IsEnabled = false;
                     tb_time.IsEnabled = false;
+                    btn_record.IsEnabled = false;
                     btn_save.IsEnabled = true;
                     //TODO: Icon
                     btn_record.Content = "Stop";
@@ -220,6 +221,7 @@ namespace audio_recorder_UI
                         tb_path.IsEnabled = true;
                     }
                     tb_time.IsEnabled = true;
+                    btn_reload.IsEnabled = true;
                     btn_save.IsEnabled = false;
                     //TODO: Icon
                     btn_record.Content = "Start";
@@ -231,12 +233,23 @@ namespace audio_recorder_UI
                 }
 
                 int avgBitrate = 0;
+                string[] devices = { };
+                if (!(resp = App.Client.SendRequest("-v record")).StringData.Contains("not recording"))
+                    devices = resp.StringData.Split('\n', StringSplitOptions.RemoveEmptyEntries);
                 foreach (CheckBox deviceOut in lb_devicesOut.Items)
+                {
+                    if (devices.Length > 0)
+                        deviceOut.IsChecked = Array.Find(devices, device => device.Split('|')[1] == deviceOut.Content.ToString()) != default;
                     if (deviceOut.IsChecked.Value)
                         avgBitrate += int.Parse(deviceOut.Tag as string);
+                }
                 foreach (CheckBox deviceIn in lb_devicesIn.Items)
+                {
+                    if (devices.Length > 0)
+                        deviceIn.IsChecked = Array.Find(devices, device => device.Split('|')[1] == deviceIn.Content.ToString()) != default;
                     if (deviceIn.IsChecked.Value)
                         avgBitrate += int.Parse(deviceIn.Tag as string);
+                }
                 if (App.Config.RecordDevices.Count > 0)
                     avgBitrate /= App.Config.RecordDevices.Count;
 

@@ -26,7 +26,7 @@
                             </ListBox>
                         </StackPanel>
                     </StackPanel>
-                    <Button Content="Reload Devices" Click="ReloadLists_Click" />
+                    <Button Name="btn_reload" Content="Reload Devices" Click="ReloadLists_Click" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Path to save :" />
