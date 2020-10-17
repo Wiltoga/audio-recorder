@@ -208,7 +208,6 @@ namespace audio_recorder_UI
                     tb_time.IsEnabled = false;
                     btn_reload.IsEnabled = false;
                     btn_save.IsEnabled = true;
-                    //TODO: Icon
                     btn_record.Content = "Stop";
                 }
                 else if (resp.StringData == "stopped")
@@ -223,7 +222,6 @@ namespace audio_recorder_UI
                     tb_time.IsEnabled = true;
                     btn_reload.IsEnabled = true;
                     btn_save.IsEnabled = false;
-                    //TODO: Icon
                     btn_record.Content = "Start";
                 }
                 else
