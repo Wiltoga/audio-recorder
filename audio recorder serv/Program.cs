@@ -228,7 +228,7 @@ namespace audioRecorderServ
                                     {
                                         item.Item1.Dispose();
                                         var device = item.Item2;
-                                        var stream = new TemporaryStream(maxDuration);
+                                        var stream = new TemporaryStream(maxDuration * device.AudioClient.MixFormat.AverageBytesPerSecond / 1024, 1024);
                                         WasapiCapture recorder;
                                         if (device.DataFlow == DataFlow.Capture)
                                             recorder = new WasapiCapture(device);
