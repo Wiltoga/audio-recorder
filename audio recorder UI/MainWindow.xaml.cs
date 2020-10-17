@@ -266,5 +266,11 @@ namespace audio_recorder_UI
             var textBox = sender as TextBox;
             e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9]+");
         }
+
+        private void Stop_Click(object sender, RoutedEventArgs e)
+        {
+            App.Client.SendRequest("-s");
+            Application.Current.Shutdown();
+        }
     }
 }
