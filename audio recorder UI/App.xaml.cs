@@ -18,6 +18,12 @@ namespace audio_recorder_UI
     /// </summary>
     public partial class App : Application
     {
+        #region Public Fields
+
+        public static LogStream logstream;
+
+        #endregion Public Fields
+
         #region Private Fields
 
         private Mutex mutex;
@@ -31,11 +37,12 @@ namespace audio_recorder_UI
         {
             try
             {
-                logstream.Log("LogStream initialized");
                 bool created;
                 uiMutex = new Mutex(true, "audioRecorderUI", out created);
                 if (created)
                 {
+                    logstream = new LogStream(Path.Combine(AppPath, "logs.log"));
+                    logstream.Log("LogStream initialized");
                     UIServer = new Server("audioRecorderUI", 1);
                     UIServer.RequestRecieved += r =>
                     {
@@ -43,7 +50,14 @@ namespace audio_recorder_UI
                         switch (code)
                         {
                             case 1:
-                                // TODO: wake up app
+                                Current.Dispatcher.Invoke(() =>
+                                {
+                                    Current.MainWindow.Visibility = Visibility.Visible;
+                                    Current.MainWindow.Activate();
+                                    Current.MainWindow.Topmost = true;
+                                    Current.MainWindow.Topmost = false;
+                                    Current.MainWindow.Focus();
+                                });
                                 break;
                         }
                     };
@@ -67,12 +81,12 @@ namespace audio_recorder_UI
                 }
 
                 // Reading or creating the settings
-                if (File.Exists(Path.Combine(configPath)))
-                    Config = JSONSerializer.Deserialize<Settings>(configPath);
+                if (File.Exists(Path.Combine(ConfigPath)))
+                    Config = JSONSerializer.Deserialize<Settings>(ConfigPath);
                 else
                     Config = new Settings();
 
-                JSONSerializer.Serialize(configPath, Config);
+                JSONSerializer.Serialize(ConfigPath, Config);
                 logstream.Log("Settings initialized");
 
                 logstream.Log("Ready");
@@ -84,15 +98,12 @@ namespace audio_recorder_UI
 
         #region Public Properties
 
+        public static string AppPath => Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         public static Client Client { get; private set; }
-        public static Server UIServer { get; private set; }
-
-        public static readonly string appPath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-        public static readonly string configPath = Path.Combine(appPath, "config.json");
-        public static readonly string dataPath = Path.Combine(appPath, "data");
-
-        public static LogStream logstream = new LogStream(Path.Combine(appPath, "logs.log"));
         public static Settings Config { get; set; }
+        public static string ConfigPath => Path.Combine(AppPath, "config.json");
+        public static string DataPath => Path.Combine(AppPath, "data");
+        public static Server UIServer { get; private set; }
 
         #endregion Public Properties
     }

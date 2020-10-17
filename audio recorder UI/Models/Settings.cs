@@ -20,13 +20,13 @@ namespace audio_recorder_UI.Models
         {
             get
             {
-                if (Directory.Exists(App.dataPath))
-                    return App.dataPath;
+                if (Directory.Exists(App.DataPath))
+                    return App.DataPath;
                 return _savepath;
             }
             set
             {
-                if (Directory.Exists(App.dataPath))
+                if (Directory.Exists(App.DataPath))
                     _savepath = "";
                 else
                     _savepath = value;

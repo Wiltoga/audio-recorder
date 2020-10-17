@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:audio_recorder_UI"
         mc:Ignorable="d"
-        Title="audio-recorder" SizeToContent="WidthAndHeight">
+        Title="audio-recorder" SizeToContent="WidthAndHeight" Closing="Window_Closing">
     <WrapPanel Orientation="Vertical">
         <GroupBox Header="Settings">
             <StackPanel>

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -109,6 +110,22 @@ namespace audioRecorderServ
 
                                     case "mxsize":
                                         r.Respond(maxBuff.ToString());
+                                        break;
+
+                                    case "record":
+                                        if (Recording)
+                                        {
+                                            var sb = new StringBuilder();
+                                            for (int i = 0; i < Recorders.Count; i++)
+                                            {
+                                                if (i > 0)
+                                                    sb.Append('\n');
+                                                sb.Append(Recorders[i].Item2.ID + '|' + Recorders[i].Item2.FriendlyName);
+                                            }
+                                            r.Respond(sb.ToString());
+                                        }
+                                        else
+                                            r.Respond("The server is not recording");
                                         break;
 
                                     default:

@@ -23,6 +23,8 @@ namespace audio_recorder_UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Public Constructors
+
         public MainWindow()
         {
             try
@@ -37,7 +39,7 @@ namespace audio_recorder_UI
                 timer.Tick += (sender, e) => ReloadRecordingElements();
                 timer.Start();
 
-                if (Directory.Exists(App.dataPath))
+                if (Directory.Exists(App.DataPath))
                 {
                     tb_path.Text = "portable mode";
                     tb_path.IsEnabled = false;
@@ -49,7 +51,7 @@ namespace audio_recorder_UI
                     tb_path.LostFocus += (sender, e) =>
                     {
                         App.Config.SavePath = tb_path.Text;
-                        JSONSerializer.Serialize(App.configPath, App.Config);
+                        JSONSerializer.Serialize(App.ConfigPath, App.Config);
                         ReloadRecordingElements();
                     };
                 }
@@ -60,7 +62,7 @@ namespace audio_recorder_UI
                     try
                     {
                         App.Config.TimeToRecord = TimeSpan.FromSeconds(int.Parse(tb_time.Text));
-                        JSONSerializer.Serialize(App.configPath, App.Config);
+                        JSONSerializer.Serialize(App.ConfigPath, App.Config);
 
                         int bitrate = 0;
                         foreach (CheckBox deviceOut in lb_devicesOut.Items)
@@ -80,6 +82,7 @@ namespace audio_recorder_UI
                 };
 
                 btn_save.IsEnabled = App.Client.SendRequest("state").StringData == "recording";
+                //TODO populate App.Config.RecordDevices if the server was already recording (utiliser "-v record")
             }
             catch (Exception e)
             {
@@ -87,37 +90,30 @@ namespace audio_recorder_UI
             }
         }
 
-        private void ShowMessageBox(string text, string caption, MessageBoxImage img, MessageBoxButton btn = MessageBoxButton.OK, MessageBoxResult res = MessageBoxResult.OK)
-        {
-            switch (img)
-            {
-                case MessageBoxImage.Error:
-                    App.logstream.Error(text);
-                    break;
+        #endregion Public Constructors
 
-                case MessageBoxImage.Warning:
-                    App.logstream.Warning(text);
-                    break;
+        #region Private Methods
 
-                default:
-                    App.logstream.Log(text);
-                    break;
-            }
-            MessageBox.Show(text, caption, btn, img, res);
-        }
-
-        private void ReloadLists_Click(object sender, RoutedEventArgs e) => ReloadDevices();
-
-        private void ReloadDevices()
+        private void BrowseFolder_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                FillList(lb_devicesOut, "-v devices output");
-                FillList(lb_devicesIn, "-v devices input");
+                if (VistaFolderBrowserDialog.IsVistaFolderDialogSupported)
+                {
+                    var browser_dialog = new VistaFolderBrowserDialog();
+                    if (browser_dialog.ShowDialog().Value)
+                    {
+                        App.Config.SavePath = browser_dialog.SelectedPath;
+                        JSONSerializer.Serialize(App.ConfigPath, App.Config);
+                        tb_path.Text = App.Config.SavePath;
+                    }
+                }
+                else
+                    MessageBox.Show("You must indicate a path manually", "Can't open a folder browser.", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
             catch (Exception ex)
             {
-                App.logstream.Error(ex);
+                App.logstream.Log(ex);
             }
         }
 
@@ -141,44 +137,20 @@ namespace audio_recorder_UI
                 cb.Unchecked += (sender, e) =>
                 {
                     App.Config.RecordDevices.Remove(deviceS[0]);
-                    JSONSerializer.Serialize(App.configPath, App.Config);
+                    JSONSerializer.Serialize(App.ConfigPath, App.Config);
                     ReloadRecordingElements();
                 };
                 list.Items.Add(cb);
             }
         }
 
-        private void BrowseFolder_Click(object sender, RoutedEventArgs e)
+        private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            try
-            {
-                if (VistaFolderBrowserDialog.IsVistaFolderDialogSupported)
-                {
-                    var browser_dialog = new VistaFolderBrowserDialog();
-                    if (browser_dialog.ShowDialog().Value)
-                    {
-                        App.Config.SavePath = browser_dialog.SelectedPath;
-                        JSONSerializer.Serialize(App.configPath, App.Config);
-                        tb_path.Text = App.Config.SavePath;
-                    }
-                }
-                else
-                    MessageBox.Show("You must indicate a path manually", "Can't open a folder browser.", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
-            catch (Exception ex)
-            {
-                App.logstream.Log(ex);
-            }
+            var textBox = sender as TextBox;
+            e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9]+");
         }
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e) => System.Diagnostics.Process.Start(App.Config.SavePath);
-
-        private void Save_Click(object sender, RoutedEventArgs e)
-        {
-            Request resp;
-            if ((resp = App.Client.SendRequest($"-o \"{Path.Combine(App.Config.SavePath, $"audiorecorder_{DateTime.Now:yyyy_MM_dd-H_mm_ss}.wav")}\"")) != null)
-                ShowMessageBox(resp.StringData, "An error occurred", MessageBoxImage.Error);
-        }
 
         private void Record_Click(object sender, RoutedEventArgs e)
         {
@@ -207,6 +179,21 @@ namespace audio_recorder_UI
             ReloadRecordingElements();
         }
 
+        private void ReloadDevices()
+        {
+            try
+            {
+                FillList(lb_devicesOut, "-v devices output");
+                FillList(lb_devicesIn, "-v devices input");
+            }
+            catch (Exception ex)
+            {
+                App.logstream.Error(ex);
+            }
+        }
+
+        private void ReloadLists_Click(object sender, RoutedEventArgs e) => ReloadDevices();
+
         private void ReloadRecordingElements()
         {
             try
@@ -227,7 +214,7 @@ namespace audio_recorder_UI
                 {
                     lb_devicesIn.IsEnabled = true;
                     lb_devicesOut.IsEnabled = true;
-                    if (!Directory.Exists(App.appPath))
+                    if (!Directory.Exists(App.AppPath))
                     {
                         btn_browse.IsEnabled = true;
                         tb_path.IsEnabled = true;
@@ -261,10 +248,30 @@ namespace audio_recorder_UI
             }
         }
 
-        private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void Save_Click(object sender, RoutedEventArgs e)
         {
-            var textBox = sender as TextBox;
-            e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9]+");
+            Request resp;
+            if ((resp = App.Client.SendRequest($"-o \"{Path.Combine(App.Config.SavePath, $"audiorecorder_{DateTime.Now:yyyy_MM_dd-H_mm_ss}.wav")}\"")) != null)
+                ShowMessageBox(resp.StringData, "An error occurred", MessageBoxImage.Error);
+        }
+
+        private void ShowMessageBox(string text, string caption, MessageBoxImage img, MessageBoxButton btn = MessageBoxButton.OK, MessageBoxResult res = MessageBoxResult.OK)
+        {
+            switch (img)
+            {
+                case MessageBoxImage.Error:
+                    App.logstream.Error(text);
+                    break;
+
+                case MessageBoxImage.Warning:
+                    App.logstream.Warning(text);
+                    break;
+
+                default:
+                    App.logstream.Log(text);
+                    break;
+            }
+            MessageBox.Show(text, caption, btn, img, res);
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
@@ -272,5 +279,13 @@ namespace audio_recorder_UI
             App.Client.SendRequest("-s");
             Application.Current.Shutdown();
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Visibility = Visibility.Hidden;
+            e.Cancel = true;
+        }
+
+        #endregion Private Methods
     }
 }
