@@ -206,7 +206,7 @@ namespace audio_recorder_UI
                     btn_browse.IsEnabled = false;
                     tb_path.IsEnabled = false;
                     tb_time.IsEnabled = false;
-                    btn_record.IsEnabled = false;
+                    btn_reload.IsEnabled = false;
                     btn_save.IsEnabled = true;
                     //TODO: Icon
                     btn_record.Content = "Stop";
