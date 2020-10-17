@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace audioRecorderServ
 {
@@ -53,7 +54,11 @@ namespace audioRecorderServ
                         {
                             case "-s":
                             case "stop":
-                                Environment.Exit(0);
+                                _ = Task.Delay(200).ContinueWith((t) =>
+                                      {
+                                          Server.Close();
+                                          Environment.Exit(0);
+                                      });
                                 break;
 
                             case "view":
