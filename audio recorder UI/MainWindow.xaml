@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:audio_recorder_UI"
-        mc:Ignorable="d"
+        mc:Ignorable="d" ResizeMode="CanMinimize"
         Title="audio-recorder" SizeToContent="WidthAndHeight" Closing="Window_Closing">
     <WrapPanel Orientation="Vertical">
         <GroupBox Header="Settings">
@@ -26,7 +26,7 @@
                             </ListBox>
                         </StackPanel>
                     </StackPanel>
-                    <Button Content="Reload Devices" Click="ReloadLists_Click" />
+                    <Button Name="btn_reload" Content="Reload Devices" Click="ReloadLists_Click" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Path to save :" />
@@ -43,7 +43,6 @@
         </GroupBox>
         <GroupBox Header="Record">
             <StackPanel Orientation="Horizontal">
-                <Image Name="img_status" d:Source="https://upload.wikimedia.org/wikipedia/commons/8/8b/Red_Circle_full.png" Width="16" />
                 <Button Name="btn_record" Content="Start" Style="{StaticResource recordBtnStyle}" Click="Record_Click" Margin="0,0,5,0" />
                 <Button Name="btn_save" Content="Save" Style="{StaticResource recordBtnStyle}" Click="Save_Click" />
                 <Button Content="Stop Server" Click="Stop_Click" />
