@@ -43,7 +43,6 @@
         </GroupBox>
         <GroupBox Header="Record">
             <StackPanel Orientation="Horizontal">
-                <Image Name="img_status" d:Source="https://upload.wikimedia.org/wikipedia/commons/8/8b/Red_Circle_full.png" Width="16" />
                 <Button Name="btn_record" Content="Start" Style="{StaticResource recordBtnStyle}" Click="Record_Click" Margin="0,0,5,0" />
                 <Button Name="btn_save" Content="Save" Style="{StaticResource recordBtnStyle}" Click="Save_Click" />
                 <Button Content="Stop Server" Click="Stop_Click" />
