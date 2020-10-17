@@ -36,7 +36,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Duration to record :" />
-                    <TextBox Name="tb_time" PreviewTextInput="Time_PreviewTextInput" d:Text="3600" />
+                    <TextBox Name="tb_time" PreviewTextInput="NumericTextBox_PreviewTextInput" d:Text="3600" />
                     <TextBlock Text="sec" />
                 </StackPanel>
             </StackPanel>

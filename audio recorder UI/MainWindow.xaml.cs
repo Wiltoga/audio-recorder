@@ -33,11 +33,8 @@ namespace audio_recorder_UI
                 ReloadRecordingElements();
 
                 var timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromSeconds(0.1);
-                timer.Tick += (sender, e) =>
-                {
-                    ReloadRecordingElements();
-                };
+                timer.Interval = TimeSpan.FromSeconds(1);
+                timer.Tick += (sender, e) => ReloadRecordingElements();
                 timer.Start();
 
                 if (Directory.Exists(App.dataPath))
@@ -60,22 +57,26 @@ namespace audio_recorder_UI
                 tb_time.Text = App.Config.TimeToRecord.TotalSeconds.ToString();
                 tb_time.LostFocus += (sender, e) =>
                 {
-                    App.Config.TimeToRecord = TimeSpan.FromSeconds(int.Parse(tb_time.Text));
-                    JSONSerializer.Serialize(App.configPath, App.Config);
+                    try
+                    {
+                        App.Config.TimeToRecord = TimeSpan.FromSeconds(int.Parse(tb_time.Text));
+                        JSONSerializer.Serialize(App.configPath, App.Config);
 
-                    int bitrate = 0;
-                    foreach (CheckBox deviceOut in lb_devicesOut.Items)
-                        if (deviceOut.IsChecked.Value)
-                            bitrate = Math.Max(bitrate, int.Parse(deviceOut.Tag as string));
-                    foreach (CheckBox deviceIn in lb_devicesIn.Items)
-                        if (deviceIn.IsChecked.Value)
-                            bitrate = Math.Max(bitrate, int.Parse(deviceIn.Tag as string));
+                        int bitrate = 0;
+                        foreach (CheckBox deviceOut in lb_devicesOut.Items)
+                            if (deviceOut.IsChecked.Value)
+                                bitrate = Math.Max(bitrate, int.Parse(deviceOut.Tag as string));
+                        foreach (CheckBox deviceIn in lb_devicesIn.Items)
+                            if (deviceIn.IsChecked.Value)
+                                bitrate = Math.Max(bitrate, int.Parse(deviceIn.Tag as string));
 
-                    Request resp;
-                    if ((resp = App.Client.SendRequest("-xs " + bitrate * App.Config.TimeToRecord.TotalSeconds)) != null)
-                        ShowMessageBox(resp.StringData, "An error occurred", MessageBoxImage.Error);
+                        Request resp;
+                        if ((resp = App.Client.SendRequest("-xs " + bitrate * App.Config.TimeToRecord.TotalSeconds / 1000)) != null)
+                            ShowMessageBox(resp.StringData, "An error occurred", MessageBoxImage.Error);
 
-                    ReloadRecordingElements();
+                        ReloadRecordingElements();
+                    }
+                    catch (Exception ex) { App.logstream.Error(ex); }
                 };
 
                 btn_save.IsEnabled = App.Client.SendRequest("state").StringData == "recording";
@@ -228,7 +229,7 @@ namespace audio_recorder_UI
                     lb_devicesOut.IsEnabled = true;
                     if (!Directory.Exists(App.appPath))
                     {
-                        btn_browse.IsEnabled = false;
+                        btn_browse.IsEnabled = true;
                         tb_path.IsEnabled = true;
                     }
                     tb_time.IsEnabled = true;
@@ -252,7 +253,7 @@ namespace audio_recorder_UI
                 if (App.Config.RecordDevices.Count > 0)
                     avgBitrate /= App.Config.RecordDevices.Count;
 
-                tbl_ram.Text = (avgBitrate * App.Config.TimeToRecord.TotalSeconds / (1024 * 1024)).ToString("0.##") + " Mo";
+                tbl_ram.Text = (avgBitrate * App.Config.TimeToRecord.TotalSeconds / (1000 * 1000)).ToString("0.##") + " Mo";
             }
             catch (Exception ex)
             {
@@ -260,6 +261,10 @@ namespace audio_recorder_UI
             }
         }
 
-        private void Time_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = !new System.Text.RegularExpressions.Regex("[^0-9.-]+").IsMatch(e.Text);
+        private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9]+");
+        }
     }
 }
