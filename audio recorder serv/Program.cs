@@ -30,7 +30,7 @@ namespace audioRecorderServ
 
         #region Private Methods
 
-        private static async System.Threading.Tasks.Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             bool created;
             mutex = new Mutex(true, "audioRecorder", out created);
@@ -38,7 +38,7 @@ namespace audioRecorderServ
             {
                 Recording = false;
                 Server = new Server("audioRecorder", 2);
-                int maxBuff = 32000;
+                int maxDuration = 30;
                 Recorders = new List<(WasapiCapture, MMDevice, TemporaryStream)>();
                 Server.RequestRecieved += r =>
                 {
@@ -109,7 +109,7 @@ namespace audioRecorderServ
                                         break;
 
                                     case "mxsize":
-                                        r.Respond(maxBuff.ToString());
+                                        r.Respond(maxDuration.ToString());
                                         break;
 
                                     case "record":
@@ -149,7 +149,7 @@ namespace audioRecorderServ
                                         }
                                         else
                                         {
-                                            var stream = new TemporaryStream(maxBuff);
+                                            var stream = new TemporaryStream(maxDuration * device.AudioClient.MixFormat.AverageBytesPerSecond / 1024, 1024);
                                             WasapiCapture recorder;
                                             if (device.DataFlow == DataFlow.Capture)
                                                 recorder = new WasapiCapture(device);
@@ -228,7 +228,7 @@ namespace audioRecorderServ
                                     {
                                         item.Item1.Dispose();
                                         var device = item.Item2;
-                                        var stream = new TemporaryStream(maxBuff);
+                                        var stream = new TemporaryStream(maxDuration);
                                         WasapiCapture recorder;
                                         if (device.DataFlow == DataFlow.Capture)
                                             recorder = new WasapiCapture(device);
@@ -255,7 +255,7 @@ namespace audioRecorderServ
                                 if (Recording)
                                     r.Respond("Unable to change the size when recording");
                                 else if (arguments.Length > 0)
-                                    maxBuff = int.Parse(arguments[0]);
+                                    maxDuration = int.Parse(arguments[0]);
                                 break;
 
                             default:
