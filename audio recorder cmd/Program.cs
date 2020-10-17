@@ -53,7 +53,8 @@ view, -v <element> [mode]   : see an element
 record, -r <devices name>   : start recording the given devices name or id
 stoprecord, -sr             : stop recording
 mxsize, -xs <size in bytes> : max size of the sample to record in kilobytes
-out, -o <path>              : saves the record as .wav file to the specified output.
+out, -o [auto] <path>              : saves the record as .wav file to the specified output. If 'auto' is added,
+                                        the path is a folder and the name is auto-generated
 state                       : request the state of the server. Result :
                                 - recording
                                 - stopped");

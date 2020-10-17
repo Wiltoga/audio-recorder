@@ -218,7 +218,11 @@ namespace audioRecorderServ
                                         rec.Item3.Seek(0, SeekOrigin.Begin);
                                         mixer.AddMixerInput(new RawSourceWaveStream(rec.Item3, rec.Item1.WaveFormat));
                                     }
-                                    WaveFileWriter.CreateWaveFile16(arguments[0], mixer);
+                                    if (arguments[0] == "auto" && arguments.Length > 1)
+                                        WaveFileWriter.CreateWaveFile16(Path.Combine(arguments[1], DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".wav"), mixer);
+                                    else
+                                        WaveFileWriter.CreateWaveFile16(arguments[0], mixer);
+
                                     var tmpList = new List<(WasapiCapture, MMDevice, TemporaryStream)>();
                                     foreach (var item in Recorders)
                                     {
