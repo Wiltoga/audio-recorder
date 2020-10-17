@@ -113,7 +113,7 @@ namespace audio_recorder_UI
             }
             catch (Exception ex)
             {
-                App.logstream.Log(ex);
+                App.logstream.Error(ex);
             }
         }
 
@@ -150,7 +150,7 @@ namespace audio_recorder_UI
             e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9]+");
         }
 
-        private void OpenFolder_Click(object sender, RoutedEventArgs e) => System.Diagnostics.Process.Start(App.Config.SavePath);
+        private void OpenFolder_Click(object sender, RoutedEventArgs e) => System.Diagnostics.Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", App.Config.SavePath);
 
         private void Record_Click(object sender, RoutedEventArgs e)
         {
