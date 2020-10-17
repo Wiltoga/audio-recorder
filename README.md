@@ -1,4 +1,5 @@
-\<icon\>
+![](https://github.com/WildGoat07/audio-recorder/blob/main/audio%20recorder%20UI/icon.png)
+
 # Audio Recorder
 
 Audio Recorder is a recording app that keeps only the few last seconds and can export them to audio file to sample stuff.
