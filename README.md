@@ -1,10 +1,10 @@
-![](https://github.com/WildGoat07/audio-recorder/blob/main/audio%20recorder%20UI/icon.png)
+sufficient![](https://github.com/WildGoat07/audio-recorder/blob/main/audio%20recorder%20UI/icon.png)
 
 # Audio Recorder
 
 Audio Recorder is a recording app that keeps only the few last seconds and can export them to audio file to sample stuff.
 
-## Features
+### Features
 
 - Select which device to capture
 - Can define how much time to record (30 seconds by default)
@@ -16,7 +16,7 @@ Audio Recorder is a recording app that keeps only the few last seconds and can e
 
 ---
 
-### Command line
+## Command line
 
 To see the available devices, use :
 
@@ -61,6 +61,25 @@ More commands available in the help panel (call `audiorec` without params):
 audiorec
 ```
 
-### User interface
+## User interface
 
-TODO
+Just select some devices, setup a correct path, start the record and save anytime !
+
+![full demo](https://i.imgur.com/EmdBSKq.gif)
+
+### Main features
+
+Live preview of the RAM used by the recorder :
+
+![RAM](https://i.imgur.com/QJPNyck.gif)
+
+---
+
+## Meta
+
+- [**WildGoat07**](https://github.com/WildGoat07)
+- [**OxyTom**](https://github.com/oxypomme) - [@OxyTom](https://twitter.com/OxyT0m8)
+
+Thanks to all of [contributors](https://github.com/WildGoat07/audio-recorder/contributors).
+
+[![license](https://img.shields.io/github/license/WildGoat07/audio-recorder?style=for-the-badge)](https://github.com/WildGoat07/audio-recorder/blob/master/LICENSE)
