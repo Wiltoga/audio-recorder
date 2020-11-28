@@ -108,6 +108,90 @@ namespace audioRecorderServ
                                         }
                                         break;
 
+                                    case "devicesname":
+                                        switch (arguments.Length > 1 ? arguments[1] : "")
+                                        {
+                                            case "all":
+                                                var result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.FriendlyName + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            case "input":
+                                                result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.FriendlyName + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            case "output":
+                                                result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.FriendlyName + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            default:
+                                                r.Respond("Invalid command");
+                                                break;
+                                        }
+                                        break;
+
+                                    case "devicesid":
+                                        switch (arguments.Length > 1 ? arguments[1] : "")
+                                        {
+                                            case "all":
+                                                var result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.ID + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            case "input":
+                                                result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.ID + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            case "output":
+                                                result = "";
+                                                foreach (var item in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
+                                                {
+                                                    if (result != "")
+                                                        result += "\n";
+                                                    result += item.ID + '|' + item.AudioClient.MixFormat.AverageBytesPerSecond;
+                                                }
+                                                r.Respond(result);
+                                                break;
+
+                                            default:
+                                                r.Respond("Invalid command");
+                                                break;
+                                        }
+                                        break;
+
                                     case "mxsize":
                                         r.Respond(maxDuration.ToString());
                                         break;

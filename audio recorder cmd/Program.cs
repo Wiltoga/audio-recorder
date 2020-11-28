@@ -40,17 +40,21 @@ commands:
 stop, -s                    : stop the server
 view, -v <element> [mode]   : see an element
                         elements :
-                            - devicesid, modes :
+                            - devices (id|name|bitrate), modes :
                                 - all : see all devices
                                 - input : only inputs
                                 - output : only outputs
-                            - devicesname, modes :
+                            - devicesid (id|bitrate), modes :
+                                - all : see all devices
+                                - input : only inputs
+                                - output : only outputs
+                            - devicesname (name|bitrate), modes :
                                 - all : see all devices
                                 - input : only inputs
                                 - output : only outputs
                             - mxsize : max size of the samples buffer in seconds
                             - record : display the currently recording devices
-record, -r <devices name>   : start recording the given devices name or id
+record, -r <devices name/id>   : start recording the given devices name or id
 stoprecord, -sr             : stop recording
 mxsize, -xs <size in bytes> : max size of the sample to record in seconds
 out, -o [auto] <path>              : saves the record as .wav file to the specified output. If 'auto' is added,
